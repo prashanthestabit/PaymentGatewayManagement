@@ -1,0 +1,13 @@
+{
+    "name": "PaymentGatewayManagement",
+    "alias": "paymentgatewaymanagement",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\PaymentGatewayManagement\\Providers\\PaymentGatewayManagementServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
