@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\PaymentGatewayManagement\Http\Controllers\ApiController;
+use Modules\PaymentGatewayManagement\Http\Controllers\PaymentGatewayManagementController;
 use Modules\PaymentGatewayManagement\Http\Controllers\StripeController;
 
 /*
@@ -17,9 +18,15 @@ use Modules\PaymentGatewayManagement\Http\Controllers\StripeController;
 */
 
 Route::group(['middleware' => ['jwt.verify']], function() {
+
     Route::post('{payment_type}/process-transaction',[ApiController::class,'processTransaction']);
 
     Route::get('{payment_type}/transaction-sucess/{id}',[ApiController::class,'sucessTransaction']);
 
     Route::get('transaction/{id}',[ApiController::class,'transactionById']);
+
+    /**
+     * Get List of Payment Gateways
+     */
+    Route::get('payment-gateways',[PaymentGatewayManagementController::class,'index']);
 });
