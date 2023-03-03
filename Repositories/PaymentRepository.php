@@ -4,7 +4,7 @@ namespace Modules\PaymentGatewayManagement\Repositories;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
-use Modules\AuthWithJWT\Interface\PaymentInterface;
+use Modules\PaymentGatewayManagement\Interface\PaymentInterface;
 
 /* Class StripeRepository.
  * This class is responsible for handling stripe operations related.

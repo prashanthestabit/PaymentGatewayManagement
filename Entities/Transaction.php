@@ -17,7 +17,8 @@ class Transaction extends Model
         'payment_id',
         'amount',
         'currency',
-        'status'
+        'status',
+        'created_at'
     ];
 
     protected static function newFactory()

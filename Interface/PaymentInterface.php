@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\AuthWithJWT\Interface;
+namespace Modules\PaymentGatewayManagement\Interface;
 
 interface PaymentInterface
 {
