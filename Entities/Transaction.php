@@ -18,8 +18,17 @@ class Transaction extends Model
         'amount',
         'currency',
         'status',
+        'description',
+        'customer_id',
+        'card_last_four',
+        'card_brand',
+        'refunded_at',
+        'failure_code',
+        'failure_message',
+        'metadata',
         'created_at'
     ];
+
 
     protected static function newFactory()
     {

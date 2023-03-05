@@ -15,15 +15,24 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->integer('type')->nullable()->comment('1 => Stripe, 2 => Paypal');
-            $table->unsignedBigInteger('user_id');
+            $table->string('type');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users');
             $table->string('order_id')->nullable();
-            $table->string('transaction_id')->nullable();
-            $table->string('payment_id');
-            $table->double('amount',8,2);
-            $table->string('currency');
+            $table->string('transaction_id');
+            $table->string('payment_id')->nullable();
+            $table->integer('amount')->nullable();
+            $table->string('currency')->nullable();
             $table->string('status');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->string('description')->nullable();
+            $table->string('customer_id')->nullable();
+            $table->string('card_last_four')->nullable();
+            $table->text('updated_fields')->nullable();
+            $table->string('card_brand')->nullable();
+            $table->timestamp('refunded_at')->nullable();
+            $table->string('failure_code')->nullable();
+            $table->string('failure_message')->nullable();
+            $table->json('metadata')->nullable();
             $table->timestamps();
         });
     }

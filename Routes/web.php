@@ -1,8 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use Modules\PaymentGatewayManagement\Http\Controllers\ApiController;
-use Modules\PaymentGatewayManagement\Http\Controllers\RazorpayController;
 use Modules\PaymentGatewayManagement\Http\Controllers\StripeController;
+use Modules\PaymentGatewayManagement\Http\Controllers\StripeWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +13,8 @@ use Modules\PaymentGatewayManagement\Http\Controllers\StripeController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('payment-success/{id}',[StripeController::class,'paymentSuccess'])->name('paymentSuccess');
-// Route::post('payment-verify',[RazorpayController::class,'razorpayTransaction'])->name('payment.verify');
+#Route::get('payment-success/{id}',[StripeController::class,'paymentSuccess'])->name('paymentSuccess');
+
+Route::post('paypal/webhook', [ PaypalController::class,'handleWebhook']);
+
+Route::post('stripe/webhook', [ StripeWebhookController::class,'handleWebhook']);

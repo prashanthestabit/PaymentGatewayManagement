@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\PaymentGatewayManagement\Http\Controllers\ApiController;
 use Modules\PaymentGatewayManagement\Http\Controllers\PaymentGatewayManagementController;
+use Modules\PaymentGatewayManagement\Http\Controllers\PaymentHistoryController;
 use Modules\PaymentGatewayManagement\Http\Controllers\PaypalController;
 use Modules\PaymentGatewayManagement\Http\Controllers\StripeController;
 
@@ -18,7 +19,7 @@ use Modules\PaymentGatewayManagement\Http\Controllers\StripeController;
 |
 */
 
-Route::post('paypal/webhook', [ PaypalController::class,'handleWebhook']);
+
 
 Route::group(['middleware' => ['jwt.verify']], function() {
 
@@ -33,7 +34,9 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */
     Route::get('payment-gateways',[PaymentGatewayManagementController::class,'index']);
 
-    Route::post('stripe/payment', [ PaymentGatewayManagementController::class,'store']);
+    Route::post('stripe/payment', [ StripeController::class,'store'])->name('stripe.payment');
 
     Route::post('paypal/payment', [ PaypalController::class,'store']);
+
+    Route::get('payments/history', [ PaymentHistoryController::class,'getPaymentHistory']);
 });

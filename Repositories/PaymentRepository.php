@@ -22,4 +22,5 @@ class PaymentRepository implements PaymentInterface
     {
         return response()->json($responseData, $statusCode);
     }
+
 }

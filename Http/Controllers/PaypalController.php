@@ -13,6 +13,9 @@ use Modules\PaymentGatewayManagement\Entities\Transaction;
 use Modules\PaymentGatewayManagement\Repositories\PaymentRepository;
 use Braintree\WebhookNotification;
 
+/**
+ * composer require braintree/braintree_php
+ */
 class PaypalController extends Controller
 {
 
@@ -85,34 +88,33 @@ class PaypalController extends Controller
 
     public function handleWebhook(Request $request)
     {
-        Log::info('test');
-        // Verify webhook authenticity using signature verification
-        // $payload = $request->getContent();
-        // $signature = $request->header('bt_signature');
-        // $publicKey = config('services.braintree.public_key');
-        // Log::info($request);
-        // $isValid = WebhookNotification::verify($signature, $payload, $publicKey);
+        //Verify webhook authenticity using signature verification
+        $payload = $request->getContent();
+        $signature = $request->header('bt_signature');
+        $publicKey = config('services.braintree.public_key');
+        Log::info($request);
+        $isValid = WebhookNotification::verify($signature, $payload, $publicKey);
 
-        // // Process webhook event
-        // if ($isValid) {
-        //     $notification = WebhookNotification::parse($payload);
-        //     $eventType = $notification->kind;
+        // Process webhook event
+        if ($isValid) {
+            $notification = WebhookNotification::parse($payload);
+            $eventType = $notification->kind;
 
-        //     switch ($eventType) {
-        //         case WebhookNotification::TRANSACTION_SETTLEMENT_DECLINED:
-        //             // Handle transaction settlement declined event
-        //             break;
-        //         case WebhookNotification::DISBURSEMENT_EXCEPTION:
-        //             // Handle disbursement exception event
-        //             break;
-        //         // Add more cases for other events you want to handle
-        //     }
+            switch ($eventType) {
+                case WebhookNotification::TRANSACTION_SETTLEMENT_DECLINED:
+                    // Handle transaction settlement declined event
+                    break;
+                case WebhookNotification::DISBURSEMENT_EXCEPTION:
+                    // Handle disbursement exception event
+                    break;
+                // Add more cases for other events you want to handle
+            }
 
-        //     // Respond with a 200 OK status code to acknowledge receipt of the webhook
-        //     return response('Webhook received', 200);
-        // } else {
-        //     // Respond with a 403 Forbidden status code if signature verification fails
-        //     return response('Invalid signature', 403);
-        // }
+            // Respond with a 200 OK status code to acknowledge receipt of the webhook
+            return response('Webhook received', 200);
+        } else {
+            // Respond with a 403 Forbidden status code if signature verification fails
+            return response('Invalid signature', 403);
+        }
     }
 }
