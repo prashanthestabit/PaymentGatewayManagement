@@ -4,6 +4,7 @@ namespace Modules\PaymentGatewayManagement\Repositories;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
+use Modules\PaymentGatewayManagement\Entities\Transaction;
 use Modules\PaymentGatewayManagement\Interface\PaymentInterface;
 
 /* Class StripeRepository.
@@ -21,6 +22,12 @@ class PaymentRepository implements PaymentInterface
     public function responseMessage($responseData, $statusCode)
     {
         return response()->json($responseData, $statusCode);
+    }
+
+
+    public function store($data)
+    {
+        return Transaction::create($data);
     }
 
 }

@@ -9,6 +9,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierController;
 use Modules\PaymentGatewayManagement\Entities\Transaction;
+use Modules\PaymentGatewayManagement\Repositories\PaymentRepository;
 
 /**
  * Before use run php artisan vendor:publish --tag="cashier-config"
@@ -16,6 +17,14 @@ use Modules\PaymentGatewayManagement\Entities\Transaction;
  */
 class StripeWebhookController extends CashierController
 {
+
+    protected $payment;
+
+    public function __construct(PaymentRepository $payment)
+    {
+        $this->payment = $payment;
+    }
+
     public function handleWebhook(Request $request)
     {
         $payload = $request->getContent();
@@ -63,7 +72,7 @@ class StripeWebhookController extends CashierController
     {
         $charge = $event['data']['object'];
 
-        $transaction = new Transaction([
+        $transaction = $this->payment->store([
             'type' => 'stripe',
             'user_id' => isset($charge['metadata']['user_id']) ? $charge['metadata']['user_id'] : null,
             'order_id' => isset($charge['metadata']['order_id']) ? $charge['metadata']['order_id'] : null,
@@ -81,7 +90,6 @@ class StripeWebhookController extends CashierController
             'metadata' => json_encode(isset($charge['metadata']) ? $charge['metadata'] : null),
             'created_at' => isset($charge['created']) ? (new DateTime())->setTimestamp($charge['created'])->format('Y-m-d H:i:s'): now(),
         ]);
-        $transaction->save();
 
         return $this->successMethod();
     }
@@ -98,7 +106,7 @@ class StripeWebhookController extends CashierController
         $subscription = $event['data']['object'];
 
         // Create a new Transaction object with the extracted data.
-        $transaction = new Transaction([
+        $transaction = $this->payment->store([
             'type' => 'stripe',
             'user_id' => $subscription['metadata']['user_id'] ?? null,
             'order_id' => $subscription['metadata']['order_id'] ?? null,
@@ -115,8 +123,6 @@ class StripeWebhookController extends CashierController
             'created_at' => now(),
         ]);
 
-        // Save the Transaction object to the database.
-        $transaction->save();
 
         return $this->successMethod();
     }
@@ -131,7 +137,7 @@ class StripeWebhookController extends CashierController
     {
         $email = $event['data']['object']['email'];
 
-        $transaction = new Transaction([
+        $transaction = $this->payment->store([
             'type' => 'stripe', // stripe payment gateway type
             'user_id' => $event['data']['object']['metadata']['user_id'] ?? null,
             'customer_id' => $event['data']['object']['id'] ?? null,
@@ -153,7 +159,7 @@ class StripeWebhookController extends CashierController
     {
         $charge = $event['data']['object'];
 
-        $transaction = new Transaction([
+        $transaction = $this->payment->store([
             'type' => 'stripe', // or other payment gateway type
             'user_id' => $charge['metadata']['user_id'] ?? null,
             'order_id' => $charge['metadata']['order_id'] ?? null,
@@ -170,8 +176,6 @@ class StripeWebhookController extends CashierController
             'created_at' => date('Y-m-d H:i:s', $charge['created']),
         ]);
 
-        $transaction->save();
-
         return $this->successMethod();
     }
 
@@ -186,7 +190,7 @@ class StripeWebhookController extends CashierController
         $paymentIntent = $event['data']['object'];
 
         // create a new transaction record
-        $transaction = new Transaction([
+        $transaction = $this->payment->store([
             'type' => 'stripe',
             'user_id' => $paymentIntent['metadata']['user_id'] ?? null,
             'order_id' => $paymentIntent['metadata']['order_id'] ?? null,
@@ -201,8 +205,6 @@ class StripeWebhookController extends CashierController
             'card_brand' => $paymentIntent['card']['brand'] ?? null,
             'created_at' => date('Y-m-d H:i:s', $paymentIntent['created']),
         ]);
-
-        $transaction->save();
 
         return $this->successMethod();
     }

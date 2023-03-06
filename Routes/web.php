@@ -1,6 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use Modules\PaymentGatewayManagement\Http\Controllers\StripeController;
+use Modules\PaymentGatewayManagement\Http\Controllers\PaypalController;
 use Modules\PaymentGatewayManagement\Http\Controllers\StripeWebhookController;
 
 /*
@@ -13,8 +13,7 @@ use Modules\PaymentGatewayManagement\Http\Controllers\StripeWebhookController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-#Route::get('payment-success/{id}',[StripeController::class,'paymentSuccess'])->name('paymentSuccess');
 
-Route::post('paypal/webhook', [ PaypalController::class,'handleWebhook']);
+Route::post('paypal/webhook', [ PayPalController::class,'handleWebhook'])->name('paypal.webhook');
 
-Route::post('stripe/webhook', [ StripeWebhookController::class,'handleWebhook']);
+Route::post('stripe/webhook', [ StripeWebhookController::class,'handleWebhook'])->name('stripe.webhook');

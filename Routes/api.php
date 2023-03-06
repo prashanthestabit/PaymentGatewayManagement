@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\PaymentGatewayManagement\Http\Controllers\ApiController;
+use Modules\PaymentGatewayManagement\Http\Controllers\BraintreeController;
 use Modules\PaymentGatewayManagement\Http\Controllers\PaymentGatewayManagementController;
 use Modules\PaymentGatewayManagement\Http\Controllers\PaymentHistoryController;
 use Modules\PaymentGatewayManagement\Http\Controllers\PaypalController;
@@ -22,13 +23,6 @@ use Modules\PaymentGatewayManagement\Http\Controllers\StripeController;
 
 
 Route::group(['middleware' => ['jwt.verify']], function() {
-
-   // Route::post('{payment_type}/process-transaction',[ApiController::class,'processTransaction']);
-
-    //Route::get('{payment_type}/transaction-sucess/{id}',[ApiController::class,'sucessTransaction']);
-
-    //Route::get('transaction/{id}',[ApiController::class,'transactionById']);
-
     /**
      * Get List of Payment Gateways
      */
@@ -36,7 +30,8 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     Route::post('stripe/payment', [ StripeController::class,'store'])->name('stripe.payment');
 
-    Route::post('paypal/payment', [ PaypalController::class,'store']);
+    Route::post('paypal/payment', [ PayPalController::class,'store'])->name('paypal.payment');
 
     Route::get('payments/history', [ PaymentHistoryController::class,'getPaymentHistory']);
+
 });
