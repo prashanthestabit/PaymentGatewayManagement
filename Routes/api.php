@@ -30,8 +30,12 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     Route::post('stripe/payment', [ StripeController::class,'store'])->name('stripe.payment');
 
-    Route::post('paypal/payment', [ PayPalController::class,'store'])->name('paypal.payment');
+    Route::post('paypal/payment', [ braintreeController::class,'store'])->name('paypal.payment');
 
     Route::get('payments/history', [ PaymentHistoryController::class,'getPaymentHistory']);
+
+    Route::post('paypal/create-payment', [ PaypalController::class,'createPayment'])->name('paypal.create-payment');
+    Route::post('paypal/execute-payment', [ PaypalController::class,'executePayment'])->name('paypal.executePayment');
+    Route::post('paypal/cancel-payment', [ PaypalController::class,'cancelPayment'])->name('paypal.cancelPayment');
 
 });
