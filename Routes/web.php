@@ -1,6 +1,8 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use Modules\PaymentGatewayManagement\Http\Controllers\BraintreeController;
+use Modules\PaymentGatewayManagement\Http\Controllers\PaypalController;
+use Modules\PaymentGatewayManagement\Http\Controllers\PaypalWebhookController;
 use Modules\PaymentGatewayManagement\Http\Controllers\StripeWebhookController;
 
 /*
@@ -14,6 +16,9 @@ use Modules\PaymentGatewayManagement\Http\Controllers\StripeWebhookController;
 |
 */
 
-Route::post('paypal/webhook', [ BraintreeController::class,'handleWebhook'])->name('paypal.webhook');
+Route::post('braintree/webhook', [ BraintreeController::class,'handleWebhook'])->name('braintree.webhook');
 
 Route::post('stripe/webhook', [ StripeWebhookController::class,'handleWebhook'])->name('stripe.webhook');
+
+
+Route::post('paypal/webhook', [ PaypalWebhookController::class,'handleWebhook'])->name('paypal.webhook');

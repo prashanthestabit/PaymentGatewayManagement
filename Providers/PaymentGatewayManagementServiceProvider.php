@@ -4,6 +4,8 @@ namespace Modules\PaymentGatewayManagement\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
+use Modules\PaymentGatewayManagement\Services\PaypalPaymentService;
+use Modules\PaymentGatewayManagement\Repositories\PaymentRepository;
 
 class PaymentGatewayManagementServiceProvider extends ServiceProvider
 {
@@ -37,6 +39,11 @@ class PaymentGatewayManagementServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        //Register Paypal Service
+        $this->app->bind(PaypalPaymentService::class, function ($app) {
+            return new PaypalPaymentService(new PaymentRepository());
+        });
+
         $this->app->register(RouteServiceProvider::class);
     }
 

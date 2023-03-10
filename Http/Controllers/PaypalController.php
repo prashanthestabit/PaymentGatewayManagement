@@ -2,160 +2,119 @@
 
 namespace Modules\PaymentGatewayManagement\Http\Controllers;
 
-use Exception;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
-use PayPal\Api\Amount;
-use PayPal\Api\Details;
-use PayPal\Api\Item;
-use PayPal\Api\ItemList;
-use PayPal\Api\Payer;
-use PayPal\Api\Payment;
-use PayPal\Api\RedirectUrls;
-use PayPal\Api\Transaction;
-use PayPal\Auth\OAuthTokenCredential;
-use PayPal\Rest\ApiContext;
-use PayPal\Facades\PayPal;
-
+use Omnipay\Omnipay;
+use Modules\PaymentGatewayManagement\Entities\Payment;
 
 /**
- * 1. composer require "paypal/rest-api-sdk-php:*"
- * 2. php artisan module:make-provider PayPalServiceProvider PaymentGatewayManagement
+ * Class PaypalController
+ * This class handles the payment flow for PayPal Express Checkout
+ * add packege composer require omnipay/paypal for use this
+ * @property Omnipay\Common\AbstractGateway $gateway The gateway for PayPal Express Checkout
  */
 class PaypalController extends Controller
 {
+    /*
+    * The gateway instance for PayPal Express Checkout
+    *  @var Omnipay\Common\AbstractGateway
+    */
+    protected $gateway;
 
-private $apiContext;
+    /**
+     * Create a new instance of the controller
+     * @return void
+     */
+    public function __construct()
+    {
+        // Set up the gateway instance for PayPal Express Checkout
+        $this->gateway = Omnipay::create('PayPal_Express');
+        $this->gateway->setUsername(env('PAYPAL_USERNAME'));
+        $this->gateway->setPassword(env('PAYPAL_PASSWORD'));
+        $this->gateway->setSignature(env('PAYPAL_SIGNATURE'));
+        $this->gateway->setTestMode(env('PAYPAL_SANDBOX'));
+    }
 
-public function __construct()
-{
-    $this->apiContext = new ApiContext(
-        new OAuthTokenCredential(
-            env('PAYPAL_CLIENT_ID'),
-            env('PAYPAL_SECRET')
-        )
-    );
-}
+    /**
+     * Create a new payment request and give link for redirect to PayPal
+     * @param Request $request The incoming request object
+     * @return JsonResponse The JSON response indicating success or failure of the request
+     */
+    public function createPayment(Request $request)
+    {
+        // Set the amount and currency
+        $params = [
+            'amount' => $request->input('amount'),
+            'currency' => 'USD',
+            'returnUrl' => route('paypal.executePayment'),
+            'cancelUrl' => route('paypal.cancelPayment'),
+        ];
 
+        // Send the purchase request
+        $response = $this->gateway->purchase($params)->send();
 
-public function createPayment(Request $request)
-{
+        // Check if the response is a redirect
+        if ($response->isRedirect()) {
+             // Get the transaction ID (token) from the response
+            $token = $response->getTransactionReference();
 
-    $accessToken = $this->apiContext->getCredential()->getAccessToken(
-        [
-            'mode' => 'sandbox', // Set the mode to 'live' or 'sandbox'
-        ]
-    );
+            Payment::create([
+                'type' => 'paypal',
+                'token' => $token,
+                'amount' => $request->input('amount')
+            ]);
 
-        if (!$this->apiContext->getCredential() || !$accessToken) {
-            echo 'Invalid API context: missing credentials';
+            // Get the redirect URL
+            $redirectUrl = $response->getRedirectUrl();
+            return response()->json(['success' => true, 'redirect_url' => $redirectUrl]);
         } else {
-            echo 'API context is valid';
+            // Payment failed, get the error message
+            $errorMessage = $response->getMessage();
+            return response()->json(['success' => false, 'error' => $errorMessage]);
+        }
+    }
+
+    /**
+     * Execute a payment after user approval
+     * @param Request $request The incoming request object
+     * @return JsonResponse The JSON response indicating success or failure of the request
+     */
+    public function executePayment(Request $request)
+    {
+        $token = $request->input('token');
+
+        // Get the payment record associated with the transaction ID
+        $payment = Payment::where('token', $token)->first();
+
+        if (!$payment) {
+            return response()->json(['success' => false, 'error' => 'Invalid transaction ID']);
         }
 
-    // Get the total amount of the payment
-    $amount = $request->input('amount');
+        $amount = $payment->amount;
 
-    // Create a Payer object
-    $payer = new Payer();
-    $payer->setPaymentMethod('paypal');
+        $response = $this->gateway->completePurchase([
+            'payerId' => $request->input('PayerID'),
+            'transactionReference' => $request->input('token'),
+            'amount' => $amount,
+        ])->send();
 
-
-    // Create an Item object
-    $item = new Item();
-    $item->setName('Product')
-        ->setCurrency('USD')
-        ->setQuantity(1)
-        ->setSku("123123") // Similar to `item_number` in Classic API
-        ->setPrice($amount);
-
-    // Create an ItemList object
-    $itemList = new ItemList();
-    $itemList->setItems([$item]);
-
-    // Create a Details object
-    $details = new Details();
-    $details->setSubtotal($amount);
-
-    // Create an Amount object
-    $totalAmount = new Amount();
-    $totalAmount->setCurrency('USD')
-        ->setTotal($amount)
-        ->setDetails($details);
-
-    // Create a Transaction object
-    $transaction = new Transaction();
-    $transaction->setAmount($totalAmount)
-        ->setItemList($itemList)
-        ->setDescription('Product description')
-        ->setInvoiceNumber(uniqid());
-
-    // Create a RedirectUrls object
-    $redirectUrls = new RedirectUrls();
-    $redirectUrls->setReturnUrl(route('paypal.executePayment'))
-                ->setCancelUrl(route('paypal.cancelPayment'));
-
-    // Create a Payment object
-    $payment = new Payment();
-    $payment->setIntent('sale')
-        ->setPayer($payer)
-        ->setRedirectUrls($redirectUrls)
-        ->setTransactions([$transaction]);
-
-    $request = clone $payment;
-
-
-    try {
-        $payment->create($this->apiContext);
-        echo $payment;
-
-        echo "\n\nRedirect user to approval_url: " . $payment->getApprovalLink() . "\n";
-    }
-    catch (\PayPal\Exception\PayPalConnectionException $ex) {
-        // This will print the detailed information on the exception.
-        //REALLY HELPFUL FOR DEBUGGING
-        echo $ex->getData();
+        if ($response->isSuccessful()) {
+            // Payment was successful
+            return response()->json(['success' => true, 'data' => $response->getData()]);
+        } else {
+            // Payment failed
+            return response()->json(['success' => false, 'error' => $response->getMessage()]);
+        }
     }
 
-    dd($this->apiContext);
-    try {
-        $payment->create($this->apiContext);
-    } catch (Exception $ex) {
-        Log::info("Created Payment Using PayPal. Please visit the URL to Approve.", "Payment", null, $request, $ex);
-    exit(1);
+    /**
+     * Handle a cancelled payment
+     * @return JsonResponse The JSON response indicating that the payment was cancelled
+     */
+    public function cancelPayment()
+    {
+        // Payment is cancelled
+        return response()->json(['success' => false, 'error' => 'Payment was cancelled.']);
     }
-    // Create the payment using the API context
-
-    dump($payment);
-    dd($payment->getApprovalLink()); die;
-}
-
-public function executePayment()
-{
-    $apiContext = app('PayPal\Client');
-
-    $paymentId = request('paymentId');
-    $payerId = request('PayerID');
-
-    $payment = Payment::get($paymentId, $apiContext);
-
-    $execution = new PaymentExecution();
-    $execution->setPayerId($payerId);
-
-    try {
-        $result = $payment->execute($execution, $apiContext);
-        // Payment is successful, do something here
-    } catch (Exception $ex) {
-        return '';
-    }
-}
-
-public function cancelPayment()
-{
-    // Payment is cancelled, do something here
-}
 
 }
