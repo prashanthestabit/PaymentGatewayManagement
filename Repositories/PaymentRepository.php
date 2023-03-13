@@ -59,7 +59,7 @@ class PaymentRepository implements PaymentInterface
                 })
                 ->when($request->input('from_date') && $request->input('to_date'), function ($query) use ($request) {
                     return $query
-                    ->whereBetween('created_at',[$request->input('from_date'), $request->input('to_date')]);
+                    ->whereBetween('created_at', [$request->input('from_date'), $request->input('to_date')]);
                 })
                 ->orderBy('created_at', 'desc')
                 ->paginate($request->input('per_page'));

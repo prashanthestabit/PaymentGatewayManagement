@@ -16,15 +16,17 @@ class PaymentStoreRequest extends FormRequest
      */
     public function rules()
     {
+        $string = 'required|string';
+
         return [
-            'token' => 'required|string',
+            'token' => $string,
             'payment_method' => 'required|array',
             'payment_method.type' => 'required|in:card',
             'payment_method.card' => 'required|array',
-            'payment_method.card.number' => 'required|string',
+            'payment_method.card.number' => $string,
             'payment_method.card.exp_month' => 'required|numeric',
             'payment_method.card.exp_year' => 'required|numeric',
-            'payment_method.card.cvc' => 'required|string',
+            'payment_method.card.cvc' => $string,
             'amount' => 'required|numeric|min:0.01',
         ];
     }

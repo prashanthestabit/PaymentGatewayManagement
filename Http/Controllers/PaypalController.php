@@ -92,7 +92,8 @@ class PaypalController extends Controller
         $payment = $this->payment->getPayment(['token'=> $token]);
 
         if (!$payment) {
-            return response()->json(['success' => false, 'error' => __('paymentgatewaymanagement::messages.payment.invalid_transaction')]);
+            return response()->json(['success' => false,
+            'error' => __('paymentgatewaymanagement::messages.payment.invalid_transaction')]);
         }
 
         $amount = $payment->amount;
@@ -119,7 +120,8 @@ class PaypalController extends Controller
     public function cancelPayment()
     {
         // Payment is cancelled
-        return response()->json(['success' => false, 'error' => __('paymentgatewaymanagement::messages.payment.cancelled')]);
+        return response()->json(['success' => false,
+         'error' => __('paymentgatewaymanagement::messages.payment.cancelled')]);
     }
 
 }

@@ -83,6 +83,25 @@ Before we get started, you'll need to make sure that you have the following prer
 
  Make sure to replace your_paypal_api_username, your_paypal_api_password, and your_paypal_api_signature with your actual PayPal API credentials. You can find your API credentials in your PayPal dashboard. Set PAYPAL_SANDBOX to true to enable testing mode.
 
+### EndPoints
+
+1. Get List of payments gateways
+
+```bash
+URL:- /api/payment-gateways
+Method:- GET
+Request Body:- token (required)
+```
+
+2. Store Stripe payments
+
+```bash
+URL:- /api/stripe/payment
+Method:- Post
+Request Body:- token (required), payment_method (array) ,payment_method.type , payment_method.card (array),payment_method.card.number,
+            payment_method.card.exp_month (Number),payment_method.card.exp_year(number),payment_method.card.cvc (string),amount (number)
+```
+
 ### Modification
 
 This module is pre-built and ready to use, but you can modify it to suit your specific requirements. The module has been built using the nwidart/laravel-modules package, so you can easily modify the code by following the Laravel module development guidelines.
