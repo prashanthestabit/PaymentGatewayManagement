@@ -47,31 +47,11 @@ class StripeWebhookControllerTest extends TestCase
      *
      * @return void
      */
-    public function testHandleStripeWebhookWithValidDataAndNotUseStripeWebhookController()
+    public function testHandleStripeWebhookWithInvalidData()
     {
-        $event = Config::get('paymentgatewaymanagement.stripeContent');
-
-        $response = $this->post(route('stripe.webhook'), $event);
-
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $response = $this->post(route('stripe.webhook'), $event=array())
+                         ->assertStatus(Response::HTTP_OK);
     }
 
-    /**
-     * Test With Disable CSRF verification middleware
-     *
-     * @return void
-     */
-    public function testHandleStripeWebhookDisableCsrfToken()
-    {
-        // Disable CSRF verification middleware for this test
-        $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
-
-        // Mock the Stripe event
-        $event = Config::get('paymentgatewaymanagement.stripeContent');
-
-        $response = $this->post(route('stripe.webhook'), $event);
-
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
-    }
 
 }

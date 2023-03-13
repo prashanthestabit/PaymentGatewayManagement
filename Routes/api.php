@@ -32,7 +32,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     Route::post('paypal/create-payment', [ PaypalController::class,'createPayment'])->name('paypal.create-payment');
 
-    Route::get('payments/history', [ PaymentHistoryController::class,'getPaymentHistory']);
+    Route::post('payments/history', [ PaymentHistoryController::class,'getPaymentHistory'])->name('payments.history');
 });
 
 Route::get('paypal/execute-payment', [ PaypalController::class,'executePayment'])->name('paypal.executePayment');

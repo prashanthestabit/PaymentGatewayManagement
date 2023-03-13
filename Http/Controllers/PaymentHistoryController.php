@@ -2,40 +2,39 @@
 
 namespace Modules\PaymentGatewayManagement\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Modules\PaymentGatewayManagement\Entities\Transaction;
+use Illuminate\Support\Facades\Log;
+use Modules\PaymentGatewayManagement\Repositories\PaymentRepository;
 
 class PaymentHistoryController extends Controller
 {
-    public function getPaymentHistory(Request $request)
+    protected $payment;
+
+    public function __construct(PaymentRepository $payment)
     {
-        $page = $request->input('page');
-
-        $transactions = Transaction::query()
-                        ->when($request->input('payment_type'), function ($query, $paymentType) {
-                            return $query->where('type', $paymentType);
-                        })
-                        ->when($request->input('status'), function ($query, $status) {
-                            return $query->where('status', $status);
-                        })
-                        ->when($request->input('amount'), function ($query, $amount) {
-                            return $query->where('amount', $amount);
-                        })
-                        ->when($request->input('payment_id'), function ($query, $paymentId) {
-                            return $query->where('payment_id', $paymentId);
-                        })
-                        ->when($request->input('transaction_id'), function ($query, $transactionId) {
-                            return $query->where('transaction_id', $transactionId);
-                        })
-                        ->when($request->input('from_date') && $request->input('to_date'), function ($query) use ($request) {
-                            return $query->whereBetween('created_at', [$request->input('from_date'), $request->input('to_date')]);
-                        })
-                        ->orderBy('created_at', 'desc')
-                        ->paginate($request->input('per_page'));
-
-
-        return response()->json(['data' => $transactions]);
+        $this->payment = $payment;
     }
 
+    public function getPaymentHistory(Request $request)
+    {
+        try {
+            $transactions = $this->payment->getTransaction($request);
+
+            return response()->json([
+                'status' => true,
+                'data' => $transactions,
+            ]);
+        } catch (Exception $e) {
+            Log::error("message : " . $e->getMessage());
+            $responseData = [
+                'status' => false,
+                'message' => __('paymentgatewaymanagement::messages.try_again'),
+            ];
+            return $this->payment->responseMessage($responseData, Response::HTTP_BAD_REQUEST);
+        }
+
+    }
 }

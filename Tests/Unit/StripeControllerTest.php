@@ -103,7 +103,7 @@ class StripeControllerTest extends TestCase
 
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJson([
-            'status' => __('authwithjwt::messages.invalid_token'),
+            'status' => __('paymentgatewaymanagement::messages.invalid_token'),
         ]);
 
     }

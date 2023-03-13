@@ -11,4 +11,6 @@ interface PaymentInterface
     public function savePayment($data);
 
     public function getPayment($condition);
+
+    public function getTransaction($request);
 }

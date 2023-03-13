@@ -4,6 +4,7 @@ namespace Modules\PaymentGatewayManagement\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\PaymentGatewayManagement\Http\Requests\Paypal\PaymentCreateRequest;
 use Omnipay\Omnipay;
 use Modules\PaymentGatewayManagement\Repositories\PaymentRepository;
 
@@ -44,7 +45,7 @@ class PaypalController extends Controller
      * @param Request $request The incoming request object
      * @return JsonResponse The JSON response indicating success or failure of the request
      */
-    public function createPayment(Request $request)
+    public function createPayment(PaymentCreateRequest $request)
     {
         // Set the amount and currency
         $params = [

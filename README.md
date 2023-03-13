@@ -91,5 +91,13 @@ This module is pre-built and ready to use, but you can modify it to suit your sp
 If you encounter any issues with the Payment Gateway Management Module, please open an issue on the GitHub repository. We will do our best to provide you with timely support and resolve any issues that you encounter.
 
 
+### For testing the api you can run the following command
+
+
+```bash
+php artisan test Modules/PaymentGatewayManagement/Tests/Unit
+```
+
+
 
 

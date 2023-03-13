@@ -33,7 +33,7 @@ class StripeWebhookController extends CashierController
         $event = json_decode($payload, true);
 
         // Handle the event
-        switch ($event['type']) {
+        switch (isset($event['type'])) {
             case 'customer.subscription.updated':
                 $this->handleCustomerSubscriptionUpdated($event);
                 // Handle the subscription status update event
@@ -218,7 +218,7 @@ class StripeWebhookController extends CashierController
     protected function handleOtherEvent($event)
     {
         // Log the event
-        Log::info('Unhandled Stripe webhook event: ' . $event['type']);
+        Log::info('Unhandled Stripe webhook event: ' . json_encode($event));
 
         return $this->successMethod();
     }
