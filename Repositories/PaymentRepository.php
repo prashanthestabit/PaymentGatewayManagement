@@ -5,6 +5,7 @@ namespace Modules\PaymentGatewayManagement\Repositories;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Modules\PaymentGatewayManagement\Entities\Transaction;
+use Modules\PaymentGatewayManagement\Entities\Payment;
 use Modules\PaymentGatewayManagement\Interface\PaymentInterface;
 
 /* Class StripeRepository.
@@ -30,4 +31,13 @@ class PaymentRepository implements PaymentInterface
         return Transaction::create($data);
     }
 
+    public function savePayment($data)
+    {
+        return Payment::create($data);
+    }
+
+    public function getPayment($condition)
+    {
+        return Payment::where($condition)->first()
+    }
 }

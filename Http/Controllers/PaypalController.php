@@ -5,7 +5,7 @@ namespace Modules\PaymentGatewayManagement\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Omnipay\Omnipay;
-use Modules\PaymentGatewayManagement\Entities\Payment;
+use Modules\PaymentGatewayManagement\Repositories\PaymentRepository;
 
 /**
  * Class PaypalController
@@ -21,12 +21,16 @@ class PaypalController extends Controller
     */
     protected $gateway;
 
+    protected $payment;
+
     /**
      * Create a new instance of the controller
      * @return void
      */
-    public function __construct()
+    public function __construct(PaymentRepository $payment)
     {
+        $this->payment = $payment;
+
         // Set up the gateway instance for PayPal Express Checkout
         $this->gateway = Omnipay::create('PayPal_Express');
         $this->gateway->setUsername(env('PAYPAL_USERNAME'));
@@ -58,7 +62,7 @@ class PaypalController extends Controller
              // Get the transaction ID (token) from the response
             $token = $response->getTransactionReference();
 
-            Payment::create([
+            $this->payment->savePayment([
                 'type' => 'paypal',
                 'token' => $token,
                 'amount' => $request->input('amount')
@@ -84,10 +88,10 @@ class PaypalController extends Controller
         $token = $request->input('token');
 
         // Get the payment record associated with the transaction ID
-        $payment = Payment::where('token', $token)->first();
+        $payment = $this->payment->getPayment(['token'=> $token]);
 
         if (!$payment) {
-            return response()->json(['success' => false, 'error' => 'Invalid transaction ID']);
+            return response()->json(['success' => false, 'error' => __('paymentgatewaymanagement::messages.payment.invalid_transaction')]);
         }
 
         $amount = $payment->amount;
@@ -114,7 +118,7 @@ class PaypalController extends Controller
     public function cancelPayment()
     {
         // Payment is cancelled
-        return response()->json(['success' => false, 'error' => 'Payment was cancelled.']);
+        return response()->json(['success' => false, 'error' => __('paymentgatewaymanagement::messages.payment.cancelled')]);
     }
 
 }

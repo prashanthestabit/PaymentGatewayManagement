@@ -3,7 +3,9 @@
 return [
 
     'payment' => [
-       'succeeded' => 'Payment succeeded'
+       'succeeded' => 'Payment succeeded',
+       'invalid_transaction' => 'Invalid transaction ID',
+       'cancelled' => 'Payment was cancelled.',
     ],
     'error' => 'Error!!',
     'invalid_token' => 'Token is Invalid',
