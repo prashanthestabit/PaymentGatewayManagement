@@ -2,8 +2,6 @@
 
 namespace Modules\PaymentGatewayManagement\Repositories;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Request;
 use Modules\PaymentGatewayManagement\Entities\Transaction;
 use Modules\PaymentGatewayManagement\Entities\Payment;
 use Modules\PaymentGatewayManagement\Interface\PaymentInterface;
@@ -43,7 +41,7 @@ class PaymentRepository implements PaymentInterface
 
     public function getTransaction($request)
     {
-        $transaction = Transaction::query()
+       return Transaction::query()
                 ->when($request->input('payment_type'), function ($query, $paymentType) {
                     return $query->where('type', $paymentType);
                 })
@@ -60,11 +58,10 @@ class PaymentRepository implements PaymentInterface
                     return $query->where('transaction_id', $transactionId);
                 })
                 ->when($request->input('from_date') && $request->input('to_date'), function ($query) use ($request) {
-                    return $query->whereBetween('created_at', [$request->input('from_date'), $request->input('to_date')]);
+                    return $query
+                    ->whereBetween('created_at',[$request->input('from_date'), $request->input('to_date')]);
                 })
                 ->orderBy('created_at', 'desc')
                 ->paginate($request->input('per_page'));
-
-            return $transaction;
     }
 }
