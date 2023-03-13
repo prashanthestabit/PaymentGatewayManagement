@@ -102,6 +102,24 @@ Request Body:- token (required), payment_method (array) ,payment_method.type , p
             payment_method.card.exp_month (Number),payment_method.card.exp_year(number),payment_method.card.cvc (string),amount (number)
 ```
 
+3. Create payment Paypal 
+
+```bash
+URL:- /api/paypal/create-payment
+Method:- Post
+Request Body:- token (required),amount (number)
+```
+
+4. get payment reports
+
+```bash
+URL:- /api/payments/history
+Method:- Post
+Request Body:- token (required),per_page (number),page (number),status (string),amount(number),payment_id (string), transaction_id(string),
+from_date (date) ,to_date (date), created_at(date)
+```
+
+
 ### Modification
 
 This module is pre-built and ready to use, but you can modify it to suit your specific requirements. The module has been built using the nwidart/laravel-modules package, so you can easily modify the code by following the Laravel module development guidelines.
