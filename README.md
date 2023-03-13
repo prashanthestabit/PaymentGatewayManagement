@@ -98,8 +98,9 @@ Request Body:- token (required)
 ```bash
 URL:- /api/stripe/payment
 Method:- Post
-Request Body:- token (required), payment_method (array) ,payment_method.type , payment_method.card (array),
-payment_method.card.number,payment_method.card.exp_month (Number),payment_method.card.exp_year(number),payment_method.card.cvc (string),amount (number)
+Request Body:- token (required), payment_method (array) ,payment_method.type ,
+ payment_method.card (array),payment_method.card.number,payment_method.card.exp_month (Number),
+ payment_method.card.exp_year(number),payment_method.card.cvc (string),amount (number)
 ```
 
 3. Create payment Paypal 
