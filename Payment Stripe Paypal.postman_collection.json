@@ -1,0 +1,97 @@
+{
+	"info": {
+		"_postman_id": "342d9005-aed2-4e8c-8920-6fd3f5e8aa2f",
+		"name": "Payment Stripe Paypal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26192364"
+	},
+	"item": [
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:8000/api/stripe/payment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\" : \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNjc4MDgxMjYzLCJleHAiOjE2NzgwODQ4NjMsIm5iZiI6MTY3ODA4MTI2MywianRpIjoiU0JOSWRja0t1UnJWMENXOSIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.xHaOw0Kj3T_lA2x-mtx39L24og_Nq-ORbdTLiRaUxyQ\",\n    \"amount\" : \"110\",\n    \"payment_method\": {\n\t\t\"type\": \"card\",\n\t\t\"card\": {\n\t\t\t\"number\": \"4242424242424242\",\n\t\t\t\"exp_month\": \"8\",\n\t\t\t\"exp_year\": \"2023\",\n\t\t\t\"cvc\": \"314\"\n\t\t}\n\t}\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/stripe/payment",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"stripe",
+						"payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:8000/api/paypal/create-payment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\" : \"100\",\n    \"token\" : \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNjc4NDM4OTAzLCJleHAiOjE2Nzg0NDI1MDMsIm5iZiI6MTY3ODQzODkwMywianRpIjoiV2VQUDZWV0ozTGk4cmVqbiIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.k2QcI_XyVJjLL3yX8Cmm0zW038bYswYNrDqB8u_Tmrs\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/paypal/create-payment",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"paypal",
+						"create-payment"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

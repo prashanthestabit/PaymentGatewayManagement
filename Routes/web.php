@@ -16,8 +16,6 @@ use Modules\PaymentGatewayManagement\Http\Controllers\StripeWebhookController;
 |
 */
 
-Route::post('braintree/webhook', [ BraintreeController::class,'handleWebhook'])->name('braintree.webhook');
-
 Route::post('stripe/webhook', [ StripeWebhookController::class,'handleWebhook'])->name('stripe.webhook');
 
 
